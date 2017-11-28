@@ -49,11 +49,11 @@ def fitfn(p, Rp, rL3, rL4, B_DIC, ABO3, ABO4, dBO4, LambdaB, EpsilonB,
 
     LambdaB_calc, EpsilonB_calc = predfn(*p, Rp, rL3, rL4, B_DIC, ABO3, ABO4, dBO4)
 
-    # Lam_err = LambdaB_bias * np.sum((LambdaB_calc - LambdaB)**2 / (LambdaB_err**2))
-    # Eps_err = np.sum((EpsilonB_calc - EpsilonB)**2 / (EpsilonB_err**2))
-    # return Lam_err / 2 + Eps_err / 2
+    Lam_err = LambdaB_bias * np.sum((LambdaB_calc - LambdaB)**2 / (LambdaB_err**2))
+    Eps_err = np.sum((EpsilonB_calc - EpsilonB)**2 / (EpsilonB_err**2))
+    return Lam_err / 2 + Eps_err / 2
 
-    Lam_err = -0.5 * np.sum((LambdaB_calc - LambdaB)**2 / (LambdaB_err**2) + np.log(2 * np.pi * LambdaB_err**2))
-    Eps_err = -0.5 * np.sum((EpsilonB_calc - EpsilonB)**2 / (EpsilonB_err**2) + np.log(2 * np.pi * LambdaB_err**2))
+    # Lam_err = -0.5 * np.sum((LambdaB_calc - LambdaB)**2 / (LambdaB_err**2) + np.log(2 * np.pi * LambdaB_err**2))
+    # Eps_err = -0.5 * np.sum((EpsilonB_calc - EpsilonB)**2 / (EpsilonB_err**2) + np.log(2 * np.pi * LambdaB_err**2))
 
-    return -(LambdaB_bias * Lam_err + Eps_err)
+    # return -(LambdaB_bias * Lam_err + Eps_err)

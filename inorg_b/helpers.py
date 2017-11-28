@@ -1,5 +1,6 @@
 from pandas import IndexSlice as idx
 import uncertainties.unumpy as up
+import numpy as np
 
 def err(x):
     return up.std_devs(x)
@@ -39,7 +40,7 @@ def A11_2_d11(A11, SRM_ratio=4.04367):
     """
     return ((A11 / (1 - A11)) / SRM_ratio - 1) * 1000
 
-def extract_model_vars(rd, exp='Uchikawa'):
+def extract_model_vars(rd, exp='Uchikawa', Rvar=('Solid', 'logR'), phase='Calcite'):
     """
     Returns
     -------
@@ -47,11 +48,16 @@ def extract_model_vars(rd, exp='Uchikawa'):
      LambdaB_err, EpsilonB_err, LambdaB_err_norm, EpsilonB_err_norm)
     """
     # prepare fitting variables
-    cind = idx[:, exp, :]
+    cind = idx[:, exp, phase]
 
     # Precipitation Rate
-    logRp = (rd.loc[cind, ('Solid', 'logR')]).values
-    Rp = 10**logRp
+    if 'log' in Rvar[-1]:
+        logRp = (rd.loc[cind, Rvar]).values
+        Rp = 10**logRp
+    else:
+        Rp = (rd.loc[cind, Rvar]).values
+        logRp = np.log10(Rp)
+
     # Solution BO3/C and BO4/CO3 ratios
     rL3 = (rd.loc[cind, ('pitzer', 'BOH3')] / rd.loc[cind, ('pitzer', 'C')]).astype(float).values
     rL4 = (rd.loc[cind, ('pitzer', 'BOH4_free')] / rd.loc[cind, ('pitzer', 'CO3')]).astype(float).values

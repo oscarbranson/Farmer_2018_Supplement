@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 from .model import predfn
 from .helpers import extract_model_vars, err, nom
 
-def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa'):
+def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa', xvar=('Solid', 'logR'), Rvar=('Solid', 'logR')):
 
     (logRp, Rp, rL3, rL4, B_DIC, ABO3, ABO4, dBO4, LambdaB, EpsilonB, 
-     LambdaB_err, EpsilonB_err, LambdaB_err_norm, EpsilonB_err_norm) = extract_model_vars(rd, exp)
+     LambdaB_err, EpsilonB_err, LambdaB_err_norm, EpsilonB_err_norm) = extract_model_vars(rd, exp, Rvar)
     
     if param_CIs is None:
         param_CIs = np.full(params.shape, None)
@@ -24,28 +24,30 @@ def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa'):
                 'edgecolor': (0,0,0,0.7),
                 's': 20}
 
-    ax1.scatter(rd.loc[cind, ('Solid', 'logR')],
+    x = rd.loc[cind, xvar]
+
+    ax1.scatter(x,
                 LambdaB, **uni_opts, label='Data')
-    sc = ax1.scatter(rd.loc[cind, ('Solid', 'logR')],
+    sc = ax1.scatter(x,
                      LambdaB_pred, **uni_opts, label='Model')
     ax1.legend()
 
-    rx1.scatter(rd.loc[cind, ('Solid', 'logR')],
+    rx1.scatter(x,
                 LambdaB_pred - LambdaB, c=sc.get_facecolor(), **uni_opts)
-    rx1.errorbar(rd.loc[cind, ('Solid', 'logR')],
+    rx1.errorbar(x,
                  LambdaB_pred - rd.loc[cind, ('Solid', 'LambdaB')], 
                  yerr=err(rd.loc[cind, ('Solid', 'LambdaB_eprop')]),
                  xerr=err(rd.loc[cind, ('Solid', 'logR_eprop')]),
                  color=(0,0,0,0.4), lw=0, elinewidth=1, label='_')
 
-    ax2.scatter(rd.loc[cind, ('Solid', 'logR')],
+    ax2.scatter(x,
                 EpsilonB, **uni_opts)
-    ax2.scatter(rd.loc[cind, ('Solid', 'logR')],
+    ax2.scatter(x,
                 EpsilonB_pred, **uni_opts)
 
-    rx2.scatter(rd.loc[cind, ('Solid', 'logR')],
+    rx2.scatter(x,
                 EpsilonB_pred - EpsilonB, c=sc.get_facecolor(), **uni_opts)
-    rx2.errorbar(rd.loc[cind, ('Solid', 'logR')],
+    rx2.errorbar(x,
                  EpsilonB_pred - rd.loc[cind, ('Solid', 'EpsilonB')], 
                  yerr=err(rd.loc[cind, ('Solid', 'EpsilonB_eprop')]),
                  xerr=err(rd.loc[cind, ('Solid', 'logR_eprop')]),
@@ -57,8 +59,12 @@ def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa'):
         rx.yaxis.set_label_position('right')
 
     # axis labels
-    ax2.set_xlabel('$log_{10}R\ (mol\ m2\ s^{-1})$')
-    rx2.set_xlabel('$log_{10}R\ (mol\ m2\ s^{-1})$')
+    if xvar[-1] == 'logR':
+        ax2.set_xlabel('$log_{10}R\ (mol\ m2\ s^{-1})$')
+        rx2.set_xlabel('$log_{10}R\ (mol\ m2\ s^{-1})$')
+    else:
+        ax2.set_xlabel(xvar[-1])
+        rx2.set_xlabel(xvar[-1])
 
     rx1.set_ylabel('Model - Data')
     rx2.set_ylabel('Model - Data')
