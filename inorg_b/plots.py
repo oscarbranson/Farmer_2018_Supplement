@@ -70,7 +70,7 @@ def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa', xvar=('Solid', 'lo
     rx2.set_ylabel('Model - Data')
 
     ax1.set_ylabel('$\lambda_B \\times 1000$', fontsize=12)
-    ax2.set_ylabel('$\epsilon_B\ (\u2030_{NIST915})$', fontsize=12)
+    ax2.set_ylabel('$\epsilon_{C-B}\ (\u2030_{NIST915})$', fontsize=12)
 
     parlab = ('$log_{10}R_b$: ' + fmt(params[-1], 1, 1, param_CIs[-1]) + '\n' + 
               '$^3K_f$: ' + fmt(params[1],2,8,param_CIs[1]) + '   $^3K_b$: ' + fmt(params[0],1,7,param_CIs[0]) + '\n' + 
