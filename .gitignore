@@ -1,0 +1,3 @@
+.ipynb_checkpoints/*
+inorg_b/__pycache__/*
+.vscode/*
