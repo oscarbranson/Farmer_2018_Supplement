@@ -1,5 +1,5 @@
 import pandas as pd
-from .helpers import sol_B_iso
+from .helpers import sol_B_iso_Rae2018
 from .phreeqpy_fns import calc_cb_rows
 
 import re
@@ -116,16 +116,18 @@ def calc_sol_iso(rd, database='pitzer', borate_mode='total', alpha=1.026):
     else:
         BO4_mode = 'BOH4'
 
-    d11BO4, d11BO3 = sol_B_iso(rd.loc[:, (database, 'B')],
-                               rd.loc[:, (database, BO4_mode)],
-                               rd.loc[:, ('Solution', 'd11B (permil vs NIST951)')], alpha=alpha)
+    d11BO4, d11BO3 = sol_B_iso_Rae2018(pH=rd.loc[:, (database, 'pH')],
+                                       BT=rd.loc[:, (database, 'B')],
+                                       BO4=rd.loc[:, (database, BO4_mode)],
+                                       d11BT=rd.loc[:, ('Solution', 'd11B (permil vs NIST951)')], alpha=alpha)
     rd.loc[:, ('Solution', 'd11BO3 (permil vs NIST951)')] = d11BO3
     rd.loc[:, ('Solution', 'd11BO4 (permil vs NIST951)')] = d11BO4
 
     if 'd11B_eprop (permil vs NIST951)' in rd.loc[:, 'Solution']:
-        d11BO4, d11BO3 = sol_B_iso(rd.loc[:, (database, 'B')],
-                               rd.loc[:, (database, BO4_mode)],
-                               rd.loc[:, ('Solution', 'd11B_eprop (permil vs NIST951)')], alpha=alpha)
+        d11BO4, d11BO3 = sol_B_iso_Rae2018(pH=rd.loc[:, (database, 'pH')],
+                                           BT=rd.loc[:, (database, 'B')],
+                                           BO4=rd.loc[:, (database, BO4_mode)],
+                                           d11BT=rd.loc[:, ('Solution', 'd11B_eprop (permil vs NIST951)')], alpha=alpha)
     rd.loc[:, ('Solution', 'd11BO3_eprop (permil vs NIST951)')] = d11BO3
     rd.loc[:, ('Solution', 'd11BO4_eprop (permil vs NIST951)')] = d11BO4
 
