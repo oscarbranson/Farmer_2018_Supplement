@@ -33,7 +33,7 @@ def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa', xvar=('Solid', 'lo
     ax1.legend()
 
     rx1.scatter(x,
-                LambdaB_pred - LambdaB, c=sc.get_facecolor(), **uni_opts)
+                LambdaB_pred - LambdaB, c=(.6, .6, .6), **uni_opts)
     rx1.errorbar(x,
                  LambdaB_pred - rd.loc[cind, ('Solid', 'LambdaB')], 
                  yerr=err(rd.loc[cind, ('Solid', 'LambdaB_eprop')]),
@@ -46,7 +46,7 @@ def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa', xvar=('Solid', 'lo
                 EpsilonB_pred, **uni_opts)
 
     rx2.scatter(x,
-                EpsilonB_pred - EpsilonB, c=sc.get_facecolor(), **uni_opts)
+                EpsilonB_pred - EpsilonB, c=(.6, .6, .6), **uni_opts)
     rx2.errorbar(x,
                  EpsilonB_pred - rd.loc[cind, ('Solid', 'EpsilonB')], 
                  yerr=err(rd.loc[cind, ('Solid', 'EpsilonB_eprop')]),
@@ -60,8 +60,8 @@ def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa', xvar=('Solid', 'lo
 
     # axis labels
     if xvar[-1] == 'logR':
-        ax2.set_xlabel('$log_{10}R\ (mol\ m2\ s^{-1})$')
-        rx2.set_xlabel('$log_{10}R\ (mol\ m2\ s^{-1})$')
+        ax2.set_xlabel('$log_{10}R\ (mol\ m^{-2}\ s^{-1})$')
+        rx2.set_xlabel('$log_{10}R\ (mol\ m^{-2}\ s^{-1})$')
     else:
         ax2.set_xlabel(xvar[-1])
         rx2.set_xlabel(xvar[-1])
@@ -70,7 +70,7 @@ def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa', xvar=('Solid', 'lo
     rx2.set_ylabel('Model - Data')
 
     ax1.set_ylabel('$\lambda_B \\times 1000$', fontsize=12)
-    ax2.set_ylabel('$\epsilon_{C-B}\ (\u2030_{NIST915})$', fontsize=12)
+    ax2.set_ylabel('$\epsilon_{C-B}\ (\u2030_{NIST951})$', fontsize=12)
 
     parlab = ('$log_{10}R_b$: ' + fmt(params[-1], 1, 1, param_CIs[-1]) + '\n' + 
               '$^3K_f$: ' + fmt(params[1],2,8,param_CIs[1]) + '   $^3K_b$: ' + fmt(params[0],1,7,param_CIs[0]) + '\n' + 
@@ -84,6 +84,8 @@ def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa', xvar=('Solid', 'lo
 
     ax2.text(.02, .02, parlab,
              transform=ax2.transAxes, ha='left', va='bottom', fontsize=7)
+    ax1.text(.05, .5, '$\lambda_B = \\frac{B/Ca}{[B]/[DIC]}$',
+             transform=ax1.transAxes, ha='left', va='bottom', fontsize=7)
 
     fig.tight_layout()
     
