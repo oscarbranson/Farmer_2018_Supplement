@@ -12,7 +12,7 @@ def model_vs_data(params, rd, param_CIs=None, exp='Uchikawa', xvar=('Solid', 'lo
     if param_CIs is None:
         param_CIs = np.full(params.shape, None)
 
-    cind = idx[:, exp, :]
+    cind = idx[:, exp, 'Calcite']
 
     LambdaB_pred, EpsilonB_pred = predfn(*params, Rp, rL3, rL4, B_DIC, ABO3, ABO4, dBO4)
     

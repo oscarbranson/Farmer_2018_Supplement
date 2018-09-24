@@ -1,5 +1,5 @@
 import numpy as np
-from .helpers import A11_2_d11, d11_2_A11
+from .helpers import A11_2_d11, d11_2_A11, d11_2_R11, R11_2_d11
 
 def rS_calc(Rb, Rp, Kf, rL, Kb):
     """
@@ -8,6 +8,9 @@ def rS_calc(Rb, Rp, Kf, rL, Kb):
     Rf = Rp + Rb
     
     return (Kf * rL * Rf) / (Rb * Kb + Rp)
+
+def alpha_SKM(Rb, Rp, alpha_f, alpha_eq):
+    return alpha_f / (1 + (Rb / (Rp + Rb)) * (alpha_f / alpha_eq - 1))
 
 def predfn(Kb3, Kf3, Kb4, Kf4, logRb, Rp, rL3, rL4, B_DIC, ABO3, ABO4, dBO4):
     """
@@ -94,6 +97,55 @@ def fitfn_single_species(p, Rp, rL, B_DIC, dB, dBO4, LambdaB, EpsilonB,
         LambdaB_bias = np.ptp(EpsilonB) / np.ptp(LambdaB)
 
     LambdaB_calc, EpsilonB_calc = predfn_single_species(*p, Rp, rL, B_DIC, dB, dBO4)
+
+    Lam_err = LambdaB_bias * np.sum((LambdaB_calc - LambdaB)**2 / (LambdaB_err**2))
+    Eps_err = np.sum((EpsilonB_calc - EpsilonB)**2 / (EpsilonB_err**2))
+    return Lam_err / 2 + Eps_err / 2
+
+# functions for rate-dependent fractionation of single species
+def predfn_single_species_R(Kb, Kf, alpha_eq, alpha_f, logRb, Rp, rL, B_DIC, dBO4):
+    """
+    Predict B partitioning and R-dependent offset from d11B BOH4.
+
+    Returns
+    -------
+    LambdaB, EpsilonB
+    """
+    Rb = 10**logRb
+    
+    # Partitioning Calculations
+    rSB = rS_calc(Rb, Rp, Kf, rL, Kb)
+
+    KB = rSB / B_DIC  # calculate lambda partitioning
+    
+    # Isotope Calculations
+    
+    # calculate fractionation from borate to solid
+    alpha_solid = alpha_SKM(Rb, Rp, alpha_f, alpha_eq)
+    
+    # calculcate fluid borate ratio
+    rBO4 = d11_2_R11(dBO4)
+    rsolid = rBO4 * alpha_solid
+    dBsolid = R11_2_d11(rsolid)
+    
+    DdBcal = dBsolid - dBO4
+    
+    return KB, DdBcal
+
+def fitfn_single_species_R(p, Rp, rL, B_DIC, dBO4, LambdaB, EpsilonB,
+                         LambdaB_err=1, EpsilonB_err=1, LambdaB_bias=None):
+    """
+    Function to minimise when fitting the model.
+
+    Parameters
+    ----------
+    p : tuple
+        Parameters to fit, in the order (Kb, Kf, logRb, epsilon).
+    """
+    if LambdaB_bias is None:
+        LambdaB_bias = np.ptp(EpsilonB) / np.ptp(LambdaB)
+
+    LambdaB_calc, EpsilonB_calc = predfn_single_species_R(*p, Rp, rL, B_DIC, dBO4)
 
     Lam_err = LambdaB_bias * np.sum((LambdaB_calc - LambdaB)**2 / (LambdaB_err**2))
     Eps_err = np.sum((EpsilonB_calc - EpsilonB)**2 / (EpsilonB_err**2))

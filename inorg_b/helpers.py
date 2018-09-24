@@ -34,7 +34,7 @@ def sol_B_iso_Rae2018(pH, BO4, BT, alpha, d11BT):
     """
 
     R_BT = d11_2_R11(d11BT)
-    Hval = 10**-pH
+    Hval = 10**(pH * -1)
     Kbval = BO4 * Hval / (BT - BO4)
     RB4 = (((Hval**2*R_BT**2 + 2*Hval**2*R_BT*alpha + Hval**2*alpha**2 + 2*Hval*Kbval*R_BT**2*alpha - 
              2*Hval*Kbval*R_BT*alpha**2 + 8*Hval*Kbval*R_BT*alpha - 2*Hval*Kbval*R_BT + 2*Hval*Kbval*alpha + 
