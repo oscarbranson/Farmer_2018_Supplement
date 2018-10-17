@@ -81,7 +81,7 @@ def run_phreeqc(input_string, dbase_path, phreeq_path='/usr/local/lib/libiphreeq
     return pd.Series(out[1], out[0])
 
 # function to calculate solution C and B speciation
-def calc_cb(temp=25, pH=8.1, Na=0, Cl=0, K=0, B=0, Ca=0, DIC=0, Mg=0, SO4=0, dbase='pitzer', database_path=None, summ=True):  
+def calc_cb(temp=25, pH=8.1, Na=0, Cl=0, K=0, B=0, Ca=0, DIC=0, Mg=0, SO4=0, dbase='pitzer', database_path=None, summ=True, phreeq_path='/usr/local/lib/libiphreeqc.so'):  
     """
     Calculate carbon and boron chemistry of solution.
 
@@ -105,7 +105,7 @@ def calc_cb(temp=25, pH=8.1, Na=0, Cl=0, K=0, B=0, Ca=0, DIC=0, Mg=0, SO4=0, dba
     # create input string
     inp = input_str(temp, pH, Na, Cl, K, B, Ca, DIC, Mg, SO4)
     # run phreeqc
-    dat = run_phreeqc(inp, os.path.join(database_path, dbase + '.dat'))
+    dat = run_phreeqc(inp, os.path.join(database_path, dbase + '.dat'), phreeq_path=phreeq_path)
 
     if summ:
         # return C and B chemistry (simple ions only)
@@ -152,7 +152,7 @@ def calc_cb(temp=25, pH=8.1, Na=0, Cl=0, K=0, B=0, Ca=0, DIC=0, Mg=0, SO4=0, dba
         return dat
 
 
-def calc_cb_rows(df, dbase='pitzer'):
+def calc_cb_rows(df, dbase='pitzer', phreeq_path='/usr/local/lib/libiphreeqc.so'):
     """
     Calculate solution conditions for each row of solution data.
 
@@ -190,5 +190,5 @@ def calc_cb_rows(df, dbase='pitzer'):
                                 Ca=r['[Ca] (M)'], 
                                 B=r['[B] (M)'], 
                                 DIC=r['[DIC] (M)'], 
-                                Mg=r['[Mg] (M)'], dbase=dbase)
+                                Mg=r['[Mg] (M)'], dbase=dbase, phreeq_path=phreeq_path)
     return out
