@@ -6,11 +6,15 @@ import re
 import uncertainties.unumpy as un
 
 
-def raw_data():
+def raw_data(file=None):
     """
     Load raw data from google sheet.
     """
-    raw_data_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRo_UMyhlIlOpdYffTQMFlySTs8v1lnr1EZpsQBHATWrRBrNJG8CnCnGKJJbcrC6Vj7L9k3_Fy4WmT8/pub?gid=0&single=true&output=csv'
+    if file is None:
+        raw_data_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRo_UMyhlIlOpdYffTQMFlySTs8v1lnr1EZpsQBHATWrRBrNJG8CnCnGKJJbcrC6Vj7L9k3_Fy4WmT8/pub?gid=0&single=true&output=csv'
+    else:
+        raw_data_url = file
+
     rd = pd.read_csv(raw_data_url, header=[0, 1], index_col=[0, 1, 2])
 
     rd.sort_index(0, inplace=True)
@@ -150,7 +154,7 @@ def calc_epsilon(rd):
         rd.loc[:, ('Solid', 'EpsilonB_eprop')] = (rd.loc[:, ('Solid', 'd11B_eprop (permil vs NIST951)')] -
                                                   rd.loc[:, ('Solution', 'd11BO4_eprop (permil vs NIST951)')])
 
-def processed(database='pitzer', lambda_num='B', lambda_denom='C', borate_mode='total', alpha_sol=1.026):
+def processed(file=None, database='pitzer', lambda_num='B', lambda_denom='C', borate_mode='total', alpha_sol=1.026):
     """
     Load and process all data.
 
@@ -173,7 +177,7 @@ def processed(database='pitzer', lambda_num='B', lambda_denom='C', borate_mode='
     -------
     pandas.DataFrame
     """
-    rd = raw_data()
+    rd = raw_data(file)
     package_errors(rd)
     rd = calc_phreeqc(rd, database)
     calc_lambda(rd, database=database, numerator=lambda_num, denom=lambda_denom)
