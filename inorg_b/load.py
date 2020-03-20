@@ -1,7 +1,7 @@
 import pandas as pd
 from .helpers import sol_B_iso_Rae2018
-from .phreeqpy_fns import calc_cb_rows
-
+from .phreeqpy_fns_mh import calc_cb_rows
+idx = pd.IndexSlice
 import re
 import uncertainties.unumpy as un
 
@@ -47,7 +47,7 @@ def package_errors(rd):
                                                rd.loc[:, ('Solution', ecol)])
 # Implement package_errors in all the above.
 
-def calc_phreeqc(rd, database='pitzer'):
+def calc_phreeqc(rd, database='pitzer', summ=True):
     """
     Calculate C and B speciation using phreeqc
 
@@ -60,7 +60,8 @@ def calc_phreeqc(rd, database='pitzer'):
     -------
     pandas.DataFrame
     """
-    sol = calc_cb_rows(rd.Solution)
+    sol = calc_cb_rows(rd.Solution, summ=summ)
+    sol.columns = [c.replace('(mol/kgw)','') for c in sol.columns]
     sol.columns = pd.MultiIndex.from_product([[database], sol.columns])
 
     rd = rd.join(sol)
@@ -154,7 +155,7 @@ def calc_epsilon(rd):
         rd.loc[:, ('Solid', 'EpsilonB_eprop')] = (rd.loc[:, ('Solid', 'd11B_eprop (permil vs NIST951)')] -
                                                   rd.loc[:, ('Solution', 'd11BO4_eprop (permil vs NIST951)')])
 
-def processed(file=None, database='pitzer', lambda_num='B', lambda_denom='C', borate_mode='total', alpha_sol=1.026):
+def processed(file=None, database='pitzer', lambda_num='B', lambda_denom='C', borate_mode='total', alpha_sol=1.026, summ=True):
     """
     Load and process all data.
 
@@ -178,8 +179,9 @@ def processed(file=None, database='pitzer', lambda_num='B', lambda_denom='C', bo
     pandas.DataFrame
     """
     rd = raw_data(file)
+    rd = rd.loc[idx[:, 'Uchikawa', :], :]
     package_errors(rd)
-    rd = calc_phreeqc(rd, database)
+    rd = calc_phreeqc(rd, database, summ=summ)
     calc_lambda(rd, database=database, numerator=lambda_num, denom=lambda_denom)
     calc_sol_iso(rd, database, borate_mode=borate_mode, alpha=alpha_sol)
     calc_epsilon(rd)
