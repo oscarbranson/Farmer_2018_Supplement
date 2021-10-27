@@ -152,7 +152,7 @@ def calc_cb(temp=25, pH=8.1, Na=0, Cl=0, K=0, B=0, Ca=0, DIC=0, Mg=0, SO4=0, dba
         return dat
 
 
-def calc_cb_rows(df, dbase='pitzer', phreeq_path='/usr/local/lib/libiphreeqc.so'):
+def calc_cb_rows(df, dbase='pitzer', phreeq_path='/usr/local/lib/libiphreeqc.so', database_path=None):
     """
     Calculate solution conditions for each row of solution data.
 
@@ -175,7 +175,10 @@ def calc_cb_rows(df, dbase='pitzer', phreeq_path='/usr/local/lib/libiphreeqc.so'
                    Ca=r['[Ca] (M)'], 
                    B=r['[B] (M)'], 
                    DIC=r['[DIC] (M)'], 
-                   Mg=r['[Mg] (M)'], dbase=dbase).index
+                   Mg=r['[Mg] (M)'],
+                   dbase=dbase,
+                   phreeq_path=phreeq_path,
+                   database_path=database_path).index
 
     # create empty output dataframe
     out = pd.DataFrame(index=df.index, columns=cols)
@@ -190,5 +193,8 @@ def calc_cb_rows(df, dbase='pitzer', phreeq_path='/usr/local/lib/libiphreeqc.so'
                                 Ca=r['[Ca] (M)'], 
                                 B=r['[B] (M)'], 
                                 DIC=r['[DIC] (M)'], 
-                                Mg=r['[Mg] (M)'], dbase=dbase, phreeq_path=phreeq_path)
+                                Mg=r['[Mg] (M)'],
+                                dbase=dbase,
+                                phreeq_path=phreeq_path,
+                                database_path=database_path)
     return out
